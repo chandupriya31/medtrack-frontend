@@ -2,7 +2,7 @@ import axios from "axios";
 import EncryptedStorage from "react-native-encrypted-storage";
 
 const api = axios.create({
-  baseURL: "http://192.168.31.156:5001/api",
+  baseURL: "https://medtrack.srinidhi.co/api",
 });
 
 api.interceptors.request.use(
