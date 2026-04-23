@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector, useDispatch } from "react-redux";
 import { loadAuthData, logoutUser } from "../../redux/authSlice";
-import LoginScreen from "../auth/Loginscreen";
+import LoginScreen from "../auth/LoginScreen";
 import RegisterScreen from "../auth/RegisterScreen";
 import ForgotPasswordScreen from "../auth/Forgot";
 import AppTabs from "./AppTabs";
