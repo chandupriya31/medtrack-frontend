@@ -6,6 +6,7 @@ import LoginScreen from "../auth/LoginScreen";
 import RegisterScreen from "../auth/RegisterScreen";
 import ForgotPasswordScreen from "../auth/Forgot";
 import AppTabs from "./AppTabs";
+import OtpVerifyScreen from "../auth/Otp";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function RootNavigator() {
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name = "OTP" component = {OtpVerifyScreen}/>
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         </>

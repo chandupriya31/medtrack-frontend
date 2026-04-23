@@ -25,7 +25,9 @@ export default function ForgotPasswordScreen({ navigation }) {
       setLoading(true);
       await api.post("/auth/forgot-password", { email: values.email });
       resetForm();
-      Alert.alert("Success", "Password reset link sent to your email.");
+      Alert.alert("Success", "OTP sent to your email.", [
+        { text: "OK", onPress: () => navigation.replace("OTP", { email: values.email, mode: "forgot" }) },
+      ]);
     } catch (err) {
       Alert.alert(
         "Error",

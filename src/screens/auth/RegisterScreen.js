@@ -41,7 +41,7 @@ export default function RegisterScreen({ navigation }) {
       });
 
       Alert.alert("Success", "Account created successfully!", [
-        { text: "OK", onPress: () => navigation.replace("Login") },
+        { text: "OK", onPress: () => navigation.replace("OTP", { email: values.email, mode: "register" }) },
       ]);
     } catch (err) {
       const message = err.response?.data?.message || "Registration failed. Try again.";
