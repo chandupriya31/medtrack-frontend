@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { TextInput, Button, Card } from "react-native-paper";
 import { Formik } from "formik";
@@ -27,19 +27,18 @@ export default function ResetPasswordScreen({ route, navigation }) {
         newPassword: values.password,
       });
 
-Toast.show({
-  type: "success",
-  text1: "Success",
-  text2: "Password reset successful",
-});
-navigation.replace("Login");
-
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Password reset successful",
+      });
+      navigation.replace("Login");
     } catch (err) {
-Toast.show({
-  type: "error",
-  text1: "Error",
-  text2: err.response?.data?.message || "Reset failed",
-});
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: err.response?.data?.message || "Reset failed",
+      });
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { TextInput, Button, Card } from "react-native-paper";
-import Toast from "react-native-toast-message"
+import Toast from "react-native-toast-message";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import api from "../../api/api";
@@ -26,8 +26,6 @@ export default function OtpVerifyScreen({ route, navigation }) {
     const newOtp = [...otpArray];
     newOtp[index] = text;
     setOtpArray(newOtp);
-
-    // move to next box
     if (text && index < 5) {
       inputs[index + 1].focus();
     }
@@ -44,11 +42,10 @@ export default function OtpVerifyScreen({ route, navigation }) {
   useEffect(() => {
     if (!email) {
       Toast.show({
-  type: "error",
-  text1: "Error",
-  text2: "Email missing",
-});
-      // navigation.goBack();
+        type: "error",
+        text1: "Error",
+        text2: "Email missing",
+      });
     }
   }, [email]);
 
@@ -65,42 +62,42 @@ export default function OtpVerifyScreen({ route, navigation }) {
   const handleVerify = async (values) => {
     try {
       setLoading(true);
-
-      // REGISTER OTP FLOW
       if (mode === "register") {
-        await api.post("/auth/verify-otp", {
+        await api.post("/auth/verify-email", {
           email,
           otp: values.otp,
         });
 
-Toast.show({
-  type: "success",
-  text1: "Success",
-  text2: "Email verified",
-});
-navigation.replace("Login");
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Email verified",
+        });
+        navigation.replace("Login");
       }
-
-      // RESET PASSWORD FLOW → go to reset screen
       if (mode === "reset") {
+        await api.post("/auth/verify-reset-otp", {
+          email,
+          otp: values.otp,
+        });
+
         navigation.navigate("ResetPassword", {
           email,
           otp: values.otp,
         });
       }
-
     } catch (err) {
-Toast.show({
-  type: "error",
-  text1: "Error",
-  text2: err.response?.data?.message || "Invalid or expired OTP",
-});
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: err.response?.data?.message || "Invalid or expired OTP",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const resendOtp = async () => {
+  const resendOtp = async (resetForm) => {
     try {
       setResendLoading(true);
 
@@ -109,19 +106,22 @@ Toast.show({
       } else {
         await api.post("/auth/forgot-password", { email });
       }
-
+      setOtpArray(["", "", "", "", "", ""]);
+      inputs.current[0]?.focus();
+      resetForm();
       setTimer(30);
+
       Toast.show({
-  type: "success",
-  text1: "Success",
-  text2: "OTP resent successfully",
-});
+        type: "success",
+        text1: "Success",
+        text2: "New OTP sent",
+      });
     } catch (err) {
-Toast.show({
-  type: "error",
-  text1: "Error",
-  text2: err.response?.data?.message || "Failed to resend OTP",
-});
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: err.response?.data?.message || "Failed to resend OTP",
+      });
     } finally {
       setResendLoading(false);
     }
@@ -142,6 +142,7 @@ Toast.show({
               handleChange,
               handleBlur,
               handleSubmit,
+              resetForm,
               values,
               errors,
               touched,
@@ -151,7 +152,6 @@ Toast.show({
                 newOtp[index] = text;
                 setOtpArray(newOtp);
 
-                // move to next
                 if (text && index < 5) {
                   inputs.current[index + 1]?.focus();
                 }
@@ -205,7 +205,7 @@ Toast.show({
 
                   {timer === 0 && (
                     <Button
-                      onPress={resendOtp}
+                      onPress={() => resendOtp(resetForm)}
                       loading={resendLoading}
                       mode="outlined"
                     >

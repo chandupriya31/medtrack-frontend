@@ -18,10 +18,10 @@ export default function AddPatientScreen({ navigation, route }) {
   const [age, setAge] = useState(patient?.age?.toString() || "");
   const [gender, setGender] = useState(patient?.gender || "");
   const [phoneNumber, setPhoneNumber] = useState(patient?.phone_number || "");
-  const [medicalCondition, setMedicalCondition] =
-    useState(patient?.medical_condition || "");
-  const [doctorName, setDoctorName] =
-    useState(patient?.doctor_name || "");
+  const [medicalCondition, setMedicalCondition] = useState(
+    patient?.medical_condition || "",
+  );
+  const [doctorName, setDoctorName] = useState(patient?.doctor_name || "");
   const [loading, setLoading] = useState(false);
 
   const handleSavePatient = async () => {

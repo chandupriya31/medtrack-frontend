@@ -30,7 +30,7 @@ export default function ForgotPasswordScreen({ navigation }) {
   text1: "Success",
   text2: "OTP sent to your email.",
 });
-navigation.replace("OTP", { email: values.email, mode: "forgot" });
+navigation.replace("OTP", { email: values.email, mode: "reset" });
     } catch (err) {
       Toast.show({
   type: "error",
