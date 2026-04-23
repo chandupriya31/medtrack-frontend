@@ -13,36 +13,37 @@ const Resetschema = Yup.object().shape({
 });
 
 export default function ResetPasswordScreen({ route, navigation }) {
-  const token = route?.params?.token;
-
+  const { email, otp } = route?.params || {};
   const [loading, setLoading] = useState(false);
 
   const handleReset = async (values) => {
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/reset-password", {
-        token,
+      await api.post("/auth/reset-password", {
+        email,
+        otp,
         newPassword: values.password,
       });
 
-      Alert.alert("Success", res.data?.message || "Password reset successful", [
+      Alert.alert("Success", "Password reset successful", [
         { text: "Login", onPress: () => navigation.replace("Login") },
       ]);
+
     } catch (err) {
       Alert.alert(
         "Error",
-        err.response?.data?.message || "Reset failed or expired link"
+        err.response?.data?.message || "Reset failed"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  if (!token) {
+  if (!email || !otp) {
     return (
       <View style={styles.center}>
-        <Text>Invalid reset link</Text>
+        <Text>Invalid reset flow</Text>
       </View>
     );
   }
@@ -72,24 +73,14 @@ export default function ResetPasswordScreen({ route, navigation }) {
                   secureTextEntry
                   value={values.password}
                   onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  style={styles.input}
                 />
-                {touched.password && errors.password && (
-                  <Text style={styles.error}>{errors.password}</Text>
-                )}
 
                 <TextInput
                   label="Confirm Password"
                   secureTextEntry
                   value={values.confirmPassword}
                   onChangeText={handleChange("confirmPassword")}
-                  onBlur={handleBlur("confirmPassword")}
-                  style={styles.input}
                 />
-                {touched.confirmPassword && errors.confirmPassword && (
-                  <Text style={styles.error}>{errors.confirmPassword}</Text>
-                )}
 
                 <Button
                   mode="contained"
@@ -111,7 +102,5 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 20 },
   card: { padding: 20 },
   title: { textAlign: "center", fontSize: 20, marginBottom: 20 },
-  input: { marginBottom: 10 },
-  error: { color: "red", fontSize: 12 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });

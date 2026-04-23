@@ -12,7 +12,7 @@ const Otpschema = Yup.object().shape({
 });
 
 export default function OtpVerifyScreen({ route, navigation }) {
-  const email = route?.params?.email;
+  const { email, mode } = route?.params || {};
 
   const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
@@ -39,14 +39,26 @@ export default function OtpVerifyScreen({ route, navigation }) {
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/verify-otp", {
-        email,
-        otp: values.otp,
-      });
+      // REGISTER OTP FLOW
+      if (mode === "register") {
+        await api.post("/auth/verify-otp", {
+          email,
+          otp: values.otp,
+        });
 
-      Alert.alert("Success", res.data?.message || "OTP verified", [
-        { text: "OK", onPress: () => navigation.replace("Login") },
-      ]);
+        Alert.alert("Success", "Email verified", [
+          { text: "OK", onPress: () => navigation.replace("Login") },
+        ]);
+      }
+
+      // RESET PASSWORD FLOW → go to reset screen
+      if (mode === "reset") {
+        navigation.navigate("ResetPassword", {
+          email,
+          otp: values.otp,
+        });
+      }
+
     } catch (err) {
       Alert.alert(
         "Error",
@@ -61,7 +73,11 @@ export default function OtpVerifyScreen({ route, navigation }) {
     try {
       setResendLoading(true);
 
-      await api.post("/auth/resend-otp", { email });
+      if (mode === "register") {
+        await api.post("/auth/resend-otp", { email });
+      } else {
+        await api.post("/auth/forgot-password", { email });
+      }
 
       setTimer(30);
       Alert.alert("Success", "OTP resent successfully");
