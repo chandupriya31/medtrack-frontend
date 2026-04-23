@@ -46,7 +46,7 @@ api.interceptors.response.use(
         if (!refreshToken) throw new Error("No refresh token");
 
         const response = await axios.post(
-          "http://192.168.31.156:5001/api/refresh-token",
+          "https://medtrack.srinidhi.co/api/refresh-token",
           { refreshToken }
         );
 
