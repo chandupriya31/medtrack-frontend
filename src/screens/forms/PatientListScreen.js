@@ -1,13 +1,13 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import {
-  Alert,
   FlatList,
   RefreshControl,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { Card, FAB, IconButton } from "react-native-paper";
 import api from "../../api/api";
 
@@ -19,14 +19,19 @@ export default function PatientListScreen({ navigation }) {
     try {
       setRefreshing(true);
       const res = await api.get("/patient");
-      console.log(res.data)
+      console.log(res.data);
       setPatients(res.data || []);
     } catch (err) {
       console.log(
         "Error fetching patients:",
         err.response?.data || err.message,
       );
-      alert("Failed to fetch patients");
+
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to fetch patients",
+      });
     } finally {
       setRefreshing(false);
     }
@@ -38,37 +43,39 @@ export default function PatientListScreen({ navigation }) {
     }, []),
   );
 
-  const deletePatient = (id) => {
-    if (!id) return alert("Invalid patient ID");
+const deletePatient = async (id) => {
+  if (!id) {
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "Invalid patient ID",
+    });
+    return;
+  }
 
-    Alert.alert(
-      "Delete Patient",
-      "Are you sure you want to delete this patient?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              setRefreshing(true);
+  try {
+    setRefreshing(true);
 
-              await api.delete(`/patient/${id}`);
+    await api.delete(`/patient/${id}`);
+    await fetchPatients();
 
-              await fetchPatients();
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: "Patient deleted successfully",
+    });
+  } catch (err) {
+    console.log("Delete error:", err.response?.data || err.message);
 
-              Alert.alert("Success", "Patient deleted successfully");
-            } catch (err) {
-              console.log("Delete error:", err.response?.data || err.message);
-              Alert.alert("Error", "Delete failed");
-            } finally {
-              setRefreshing(false);
-            }
-          },
-        },
-      ],
-    );
-  };
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "Delete failed",
+    });
+  } finally {
+    setRefreshing(false);
+  }
+};
 
   return (
     <View style={{ flex: 1, backgroundColor: "#f4f7fb" }}>

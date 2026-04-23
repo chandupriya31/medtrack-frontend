@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet} from "react-native";
 import { TextInput, Button, Card } from "react-native-paper";
+import Toast from "react-native-toast-message"
 import { Formik } from "formik";
 import * as Yup from "yup";
 import api from "../../api/api";
@@ -42,7 +43,11 @@ export default function OtpVerifyScreen({ route, navigation }) {
 
   useEffect(() => {
     if (!email) {
-      Alert.alert("Error", "Email missing");
+      Toast.show({
+  type: "error",
+  text1: "Error",
+  text2: "Email missing",
+});
       // navigation.goBack();
     }
   }, [email]);
@@ -68,9 +73,12 @@ export default function OtpVerifyScreen({ route, navigation }) {
           otp: values.otp,
         });
 
-        Alert.alert("Success", "Email verified", [
-          { text: "OK", onPress: () => navigation.replace("Login") },
-        ]);
+Toast.show({
+  type: "success",
+  text1: "Success",
+  text2: "Email verified",
+});
+navigation.replace("Login");
       }
 
       // RESET PASSWORD FLOW → go to reset screen
@@ -82,10 +90,11 @@ export default function OtpVerifyScreen({ route, navigation }) {
       }
 
     } catch (err) {
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "Invalid or expired OTP"
-      );
+Toast.show({
+  type: "error",
+  text1: "Error",
+  text2: err.response?.data?.message || "Invalid or expired OTP",
+});
     } finally {
       setLoading(false);
     }
@@ -102,12 +111,17 @@ export default function OtpVerifyScreen({ route, navigation }) {
       }
 
       setTimer(30);
-      Alert.alert("Success", "OTP resent successfully");
+      Toast.show({
+  type: "success",
+  text1: "Success",
+  text2: "OTP resent successfully",
+});
     } catch (err) {
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "Failed to resend OTP"
-      );
+Toast.show({
+  type: "error",
+  text1: "Error",
+  text2: err.response?.data?.message || "Failed to resend OTP",
+});
     } finally {
       setResendLoading(false);
     }

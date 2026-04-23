@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 import { TextInput, Button } from "react-native-paper";
 import { Dropdown } from "react-native-element-dropdown";
 import api from "../../api/api";
@@ -28,12 +29,20 @@ export default function AddPatientScreen({ navigation, route }) {
     const trimmedPhone = phoneNumber.trim();
 
     if (!trimmedName || !age || !gender || !trimmedPhone) {
-      Alert.alert("Validation", "Please fill all required fields");
+      Toast.show({
+        type: "error",
+        text1: "Validation",
+        text2: "Please fill all required fields",
+      });
       return;
     }
 
     if (isNaN(age) || Number(age) <= 0) {
-      Alert.alert("Validation", "Please enter valid age");
+      Toast.show({
+        type: "error",
+        text1: "Validation",
+        text2: "Please enter valid age",
+      });
       return;
     }
 
@@ -51,16 +60,29 @@ export default function AddPatientScreen({ navigation, route }) {
 
       if (patient) {
         await api.put(`/patient/${patient.patient_id}`, payload);
-        Alert.alert("Success", "Patient updated successfully!");
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Patient updated successfully!",
+        });
       } else {
         await api.post("/patient", payload);
-        Alert.alert("Success", "Patient added successfully!");
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Patient added successfully!",
+        });
       }
 
       navigation.goBack();
     } catch (err) {
       console.log("Save error:", err.response?.data || err.message);
-      Alert.alert("Error", "Failed to save patient");
+
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to save patient",
+      });
     } finally {
       setLoading(false);
     }

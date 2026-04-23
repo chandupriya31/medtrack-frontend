@@ -27,10 +27,11 @@ export default function AddMedicineScreen({ navigation }) {
       const res = await api.get("/patient");
       setPatients(res.data || []);
     } catch (err) {
-      Toast.show({
-        type: "error",
-        text1: "Failed to fetch patients",
-      });
+Toast.show({
+  type: "error",
+  text1: "Error",
+  text2: "Failed to fetch patients",
+});
     }
   };
 

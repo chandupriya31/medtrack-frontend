@@ -4,17 +4,17 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { TextInput, Button, Card, Title } from "react-native-paper";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../../api/api";
 import { setCredentials, clearError } from "../../redux/authSlice";
-import {registerForPush} from "../forms/notification"
+import { registerForPush } from "../forms/notification";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -29,9 +29,12 @@ export default function LoginScreen({ navigation }) {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("Login Error", error, [
-        { text: "OK", onPress: () => dispatch(clearError()) },
-      ]);
+      Toast.show({
+        type: "error",
+        text1: "Login Error",
+        text2: error,
+      });
+      dispatch(clearError());
     }
   }, [error]);
 
@@ -42,16 +45,26 @@ export default function LoginScreen({ navigation }) {
       const { accessToken, refreshToken } = res.data;
 
       dispatch(setCredentials({ accessToken, refreshToken }));
-      if(res.data){
+      if (res.data) {
         await registerForPush(accessToken);
       }
 
-      Alert.alert("Success", "Logged in!", [
-        { text: "OK", onPress: () => navigation.replace("App") },
-      ]);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Logged in!",
+      });
+
+      navigation.replace("App");
     } catch (err) {
-      const message = err.response?.data?.message || "Login failed. Try again.";
-      Alert.alert("Login Error", message);
+      const message =
+        err.response?.data?.message || "Login failed. Try again.";
+
+      Toast.show({
+        type: "error",
+        text1: "Login Error",
+        text2: message,
+      });
     } finally {
       setLoading(false);
     }
@@ -71,7 +84,14 @@ export default function LoginScreen({ navigation }) {
             validationSchema={LoginSchema}
             onSubmit={handleLogin}
           >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
               <>
                 <TextInput
                   label="Email"
@@ -137,8 +157,12 @@ export default function LoginScreen({ navigation }) {
                 </Button>
 
                 <View style={styles.footer}>
-                  <Text style={styles.footerText}>Don't have an account?</Text>
-                  <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+                  <Text style={styles.footerText}>
+                    Don't have an account?
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Register")}
+                  >
                     <Text style={styles.link}> Register</Text>
                   </TouchableOpacity>
                 </View>

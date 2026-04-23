@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { TextInput, Button, Card } from "react-native-paper";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -25,14 +25,18 @@ export default function ForgotPasswordScreen({ navigation }) {
       setLoading(true);
       await api.post("/auth/forgot-password", { email: values.email });
       resetForm();
-      Alert.alert("Success", "OTP sent to your email.", [
-        { text: "OK", onPress: () => navigation.replace("OTP", { email: values.email, mode: "forgot" }) },
-      ]);
+      Toast.show({
+  type: "success",
+  text1: "Success",
+  text2: "OTP sent to your email.",
+});
+navigation.replace("OTP", { email: values.email, mode: "forgot" });
     } catch (err) {
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "Something went wrong",
-      );
+      Toast.show({
+  type: "error",
+  text1: "Error",
+  text2: err.response?.data?.message || "Something went wrong",
+});
     } finally {
       setLoading(false);
     }

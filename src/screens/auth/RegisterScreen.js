@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import { View, StyleSheet,Text, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import Toast from "react-native-toast-message";
 import { TextInput, Button, Card, Title } from "react-native-paper";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -40,12 +41,19 @@ export default function RegisterScreen({ navigation }) {
       device_token: fcmToken
       });
 
-      Alert.alert("Success", "Account created successfully!", [
-        { text: "OK", onPress: () => navigation.replace("OTP", { email: values.email, mode: "register" }) },
-      ]);
+      Toast.show({
+  type: "success",
+  text1: "Success",
+  text2: "Account created successfully!",
+});
+navigation.replace("OTP", { email: values.email, mode: "register" });
     } catch (err) {
       const message = err.response?.data?.message || "Registration failed. Try again.";
-      Alert.alert("Error", message);
+      Toast.show({
+  type: "error",
+  text1: "Error",
+  text2: message,
+});
     } finally {
       setLoading(false);
     }
